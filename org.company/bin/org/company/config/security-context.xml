@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+
+	<context:component-scan base-package="org.company" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- security:intercept denyAll, isAuthenticated(), hasAnyRole({'ROLE_XYZ', 'ROLE_ABC'}) -->
+	<security:http use-expressions="true">
+		<security:intercept-url pattern="/account/*" access="permitAll" />
+		<security:intercept-url pattern="/resources/**" access="permitAll" />
+		<security:intercept-url pattern="/**" access="hasRole('ROLE_GUESS')" />
+
+		<!-- form-login : default values, you could remove it -->
+		<security:form-login login-page="/account/login" login-processing-url="/login" password-parameter="password" username-parameter="username"
+			default-target-url="/" authentication-failure-url="/account/login?error" />
+		<security:csrf disabled="false" />
+		<security:logout logout-success-url="/account/login" logout-url="/account/logout" />
+		<security:remember-me token-validity-seconds="36000" user-service-ref="customUserDetailsService" data-source-ref="dataSource"
+			remember-me-parameter="rememberme" />
+	</security:http>
+
+	<security:authentication-manager>
+		<security:authentication-provider ref="customAuthenticationProvider" />
+	</security:authentication-manager>
+
+	<bean id="customAuthenticationProvider" class="org.company.security.CustomAuthenticationProvider" />
+	<bean id="customUserDetailsService" class="org.company.security.CustomUserDetailsService" />
+
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder">
+	</bean>
+</beans>

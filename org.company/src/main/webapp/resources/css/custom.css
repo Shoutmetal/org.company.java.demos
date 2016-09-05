@@ -1,0 +1,11 @@
+.footer {
+  background-color:#c3c3c3;
+  bottom:0;
+  height:60px;
+  position:absolute;
+  width:100%;
+}
+sticky-footer.css (line 11)
+* {
+  box-sizing:border-box;
+}
